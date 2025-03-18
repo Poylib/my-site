@@ -1,0 +1,10 @@
+{
+  "common": {
+    "readMore": "Read More",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog"
+  }
+}

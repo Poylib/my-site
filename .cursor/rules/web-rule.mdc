@@ -62,3 +62,27 @@ General preferences:
 - Don't import anything from Radix UI. Always import UI componentsfrom Shadcn UI.
 - `useLoaderData` does not exist anymore. Instead, components receive Router.ComponentProps type param that contains loaderData.
 - `useActionData` does not exist anymore. Instead, components receive Router.ComponentProps type param that contains actionData.
+
+### **Commit Message Rules**  
+
+#### **📌 General Rules**  
+- Write commit messages in **English**.  
+- Follow the format: **`<Type>: <Message>`**  
+- Keep messages **clear and concise**.  
+
+#### **📌 Commit Message Types**  
+| Type     | Description |
+|----------|------------|
+| **Feature:** | Add a new feature |
+| **Fix:** | Fix a bug or issue |
+| **Chore:** | Maintenance tasks (e.g., updating dependencies) |
+| **Refactor:** | Code changes that don’t add features or fix bugs |
+| **Docs:** | Documentation updates |
+| **Style:** | Code style changes (formatting, missing semicolons, etc.) |
+| **Test:** | Adding or updating tests |
+
+#### **📌 Examples**  
+```bash
+git commit -m "Feature: Add image upload functionality"
+git commit -m "Fix: Resolve login issue on mobile devices"
+git commit -m "Chore: Update dependencies to latest versions"

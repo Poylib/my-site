@@ -1,25 +1,169 @@
-import { PostList } from '@/components/blog/PostList';
-import { supabase } from '@/lib/supabase/client';
+import { getLatestPosts, getAllTags, getPostsByTag } from '@/lib/posts';
+import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import { Metadata } from 'next';
 
-export default async function BlogPage({
-  params: { lang },
+// 지원하는 언어 목록
+export const supportedLanguages = ['ko', 'en', 'ja'];
+
+// 언어별 메타데이터
+export async function generateMetadata({
+  params,
 }: {
   params: { lang: string };
-}) {
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('language', lang)
-    .order('created_at', { ascending: false });
+}): Promise<Metadata> {
+  const { lang } = params;
+
+  const titles = {
+    ko: '블로그 | 포토그래피 블로그',
+    en: 'Blog | Photography Blog',
+    ja: 'ブログ | フォトグラフィーブログ',
+  };
+
+  const descriptions = {
+    ko: '포토그래피 블로그의 모든 글을 확인해보세요. 필름카메라, 야경, 촬영팁 등 다양한 주제의 글을 제공합니다.',
+    en: 'Check out all posts from our photography blog. We offer articles on various topics including film cameras, night photography, and photography tips.',
+    ja: 'フォトグラフィーブログのすべての記事をご覧ください。フィルムカメラ、夜景、撮影のヒントなど、さまざまなトピックの記事を提供しています。',
+  };
+
+  return {
+    title: titles[lang as keyof typeof titles] || titles.ko,
+    description:
+      descriptions[lang as keyof typeof descriptions] || descriptions.ko,
+    alternates: {
+      languages: {
+        ko: '/ko/blog',
+        en: '/en/blog',
+        ja: '/ja/blog',
+      },
+    },
+  };
+}
+
+// 언어별 텍스트
+const texts = {
+  ko: {
+    title: '블로그',
+    description: '포토그래피 블로그의 모든 글을 확인해보세요.',
+    readMore: '자세히 보기',
+    categories: '카테고리',
+    allPosts: '전체 글',
+    postsCount: '개의 글',
+    filteredTitle: '태그: ',
+  },
+  en: {
+    title: 'Blog',
+    description: 'Check out all posts from our photography blog.',
+    readMore: 'Read More',
+    categories: 'Categories',
+    allPosts: 'All Posts',
+    postsCount: 'posts',
+    filteredTitle: 'Tag: ',
+  },
+  ja: {
+    title: 'ブログ',
+    description: 'フォトグラフィーブログのすべての記事をご覧ください。',
+    readMore: '詳細を見る',
+    categories: 'カテゴリー',
+    allPosts: '全ての記事',
+    postsCount: '件',
+    filteredTitle: 'タグ: ',
+  },
+};
+
+interface BlogPageProps {
+  params: { lang: string };
+  searchParams: { tag?: string };
+}
+
+export default async function BlogPage({
+  params,
+  searchParams,
+}: BlogPageProps) {
+  const { lang } = params;
+  const { tag } = searchParams;
+
+  const [posts, tags] = await Promise.all([
+    tag ? getPostsByTag(tag) : getLatestPosts(12),
+    getAllTags(),
+  ]);
+
+  const t = texts[lang as keyof typeof texts] || texts.ko;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">
-        {lang === 'ko' && '블로그'}
-        {lang === 'en' && 'Blog'}
-        {lang === 'ja' && 'ブログ'}
-      </h1>
-      {posts && <PostList posts={posts} />}
+    <div className="container mx-auto px-4 py-8 mt-16">
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* 왼쪽 사이드바 - 태그 목록 */}
+        <aside className="md:w-64 flex-shrink-0">
+          <h2 className="text-xl font-bold mb-4">{t.categories}</h2>
+          <div className="space-y-2">
+            <Link
+              href={`/${lang}/blog`}
+              className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium"
+            >
+              {t.allPosts}
+            </Link>
+            {tags.map((tag) => (
+              <Link
+                key={tag.id}
+                href={`/${lang}/blog?tag=${tag.slug}`}
+                className={`px-4 py-2 rounded-lg hover:bg-gray-100 flex justify-between items-center ${
+                  searchParams.tag === tag.slug ? 'bg-gray-100' : ''
+                }`}
+              >
+                <span className="text-gray-700">#{tag.name}</span>
+                <span className="text-xs text-gray-500">
+                  {tag.post_count} {t.postsCount}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </aside>
+
+        {/* 오른쪽 메인 컨텐츠 - 게시글 목록 */}
+        <main className="flex-1">
+          <h1 className="text-3xl font-bold mb-2">
+            {tag ? `${t.filteredTitle} #${tag}` : t.title}
+          </h1>
+          <p className="text-gray-600 mb-8">{t.description}</p>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {posts.map((post) => (
+              <Link href={`/${lang}/posts/${post.slug}`} key={post.id}>
+                <Card className="hover:shadow-lg transition-shadow h-full">
+                  <CardContent className="p-4">
+                    <div className="aspect-video bg-gray-200 mb-4 rounded-lg overflow-hidden">
+                      <img
+                        src={post.thumbnail_url}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="font-semibold mb-2">{post.title}</h3>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {post.content}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {post.tags.map((tag) => (
+                        <Link
+                          key={tag}
+                          href={`/${lang}/blog?tag=${tag.toLowerCase()}`}
+                          className="text-xs bg-gray-100 px-2 py-1 rounded-full hover:bg-gray-200"
+                        >
+                          #{tag}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="mt-4 text-sm text-blue-600">
+                      {t.readMore} →
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

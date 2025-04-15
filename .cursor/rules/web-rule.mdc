@@ -1,7 +1,7 @@
 ---
 description: 
-globs: *.tsx
-alwaysApply: false
+globs: 
+alwaysApply: true
 ---
 
 You are an expert full-stack web developer focused on producing clear, readable Next.js code.
@@ -27,7 +27,92 @@ Technical preferences:
 - Implement error handling and error logging
 - Use semantic HTML elements where possible
 
+## **Data Structure**
+---
+
+### 1. posts (게시글)
+게시글의 기본 정보를 저장하는 테이블입니다.
+
+- **id**: 게시글의 고유 ID (UUID, 기본값: `uuid_generate_v4()`, 기본 키)
+- **title_ko**: 한국어 제목 (텍스트, 필수 입력)
+- **title_en**: 영어 제목 (텍스트, 선택 입력)
+- **content_ko**: 한국어 내용 (텍스트, 필수 입력)
+- **content_en**: 영어 내용 (텍스트, 선택 입력)
+- **thumbnail_url**: 썸네일 이미지 URL (텍스트, 필수 입력)
+- **created_at**: 생성일시 (타임스탬프, 기본값: `now()`, 필수 입력)
+- **updated_at**: 수정일시 (타임스탬프, 기본값: `now()`, 필수 입력)
+- **author_id**: 작성자 ID (UUID, 외래 키: `auth.users(id)`, 필수 입력)
+- **view_count**: 조회수 (정수, 기본값: 0)
+- **is_published**: 발행 여부 (불리언, 기본값: true)
+- **slug**: URL 슬러그 (텍스트, 필수 입력, 고유값)
+- **has_translation**: 영어 번역 존재 여부 (불리언, 기본값: false)
+
+---
+
+### 2. tags (태그)
+태그 정보를 저장하는 테이블입니다.
+
+- **id**: 태그의 고유 ID (UUID, 기본값: `uuid_generate_v4()`, 기본 키)
+- **name**: 태그 이름 (텍스트, 필수 입력, 고유값)
+- **slug**: URL 슬러그 (텍스트, 필수 입력, 고유값)
+- **created_at**: 생성일시 (타임스탬프, 기본값: `now()`, 필수 입력)
+
+---
+
+### 3. post_tags (게시글-태그 연결)
+게시글과 태그의 다대다 관계를 관리하는 테이블입니다.
+
+- **post_id**: 게시글 ID (UUID, 외래 키: `posts(id)`, 기본 키, 삭제 시 연쇄 삭제)
+- **tag_id**: 태그 ID (UUID, 외래 키: `tags(id)`, 기본 키, 삭제 시 연쇄 삭제)
+- **created_at**: 생성일시 (타임스탬프, 기본값: `now()`, 필수 입력)
+
+---
+
+### 4. 게시글 이미지 (post_images)  
+게시글에 포함된 이미지 정보를 저장하는 테이블이다.  
+
+- **id**: 이미지의 고유 ID (UUID, 기본값: `uuid_generate_v4()`, 기본 키)  
+- **post_id**: 게시글 ID (`posts(id)`를 참조하는 외래 키, 삭제 시 `Cascade`, 필수 입력)  
+- **image_url**: 이미지 URL (필수 입력)  
+- **caption**: 이미지 설명 (옵션)  
+- **order_index**: 이미지 순서 (필수 입력)  
+- **created_at**: 이미지 생성일시 (`timestamp with time zone`, 기본값: `now()`, 필수 입력)  
+
+---
+
+### 5. SNS 링크 (social_links)  
+SNS 계정 정보를 저장하는 테이블이다.  
+
+- **id**: 링크의 고유 ID (UUID, 기본값: `uuid_generate_v4()`, 기본 키)  
+- **platform**: SNS 플랫폼 이름 (필수 입력)  
+- **url**: SNS URL (필수 입력)  
+- **created_at**: 링크 생성일시 (`timestamp with time zone`, 기본값: `now()`, 필수 입력)  
+
+---
+
+### 6. 게시글 좋아요 (post_likes)  
+게시글에 대한 좋아요 정보를 저장하는 테이블이다.  
+
+- **post_id**: 게시글 ID (`posts(id)`를 참조하는 외래 키, 삭제 시 `Cascade`)  
+- **user_id**: 사용자 ID (`auth.users(id)`를 참조하는 외래 키, 삭제 시 `Cascade`)  
+- **created_at**: 좋아요 생성일시 (`timestamp with time zone`, 기본값: `now()`, 필수 입력)  
+
+---
+
+### 7. 댓글 (post_comments)  
+게시글의 댓글 정보를 저장하는 테이블이다.  
+
+- **id**: 댓글의 고유 ID (UUID, 기본값: `uuid_generate_v4()`, 기본 키)  
+- **post_id**: 게시글 ID (`posts(id)`를 참조하는 외래 키, 삭제 시 `Cascade`, 필수 입력)  
+- **user_id**: 작성자 ID (`auth.users(id)`를 참조하는 외래 키, 삭제 시 `Cascade`, 필수 입력)  
+- **content**: 댓글 내용 (필수 입력)  
+- **created_at**: 댓글 생성일시 (`timestamp with time zone`, 기본값: `now()`, 필수 입력)  
+- **updated_at**: 댓글 수정일시 (`timestamp with time zone`, 기본값: `now()`, 필수 입력)  
+
+---
+
 **Important:**
+- When use supabase, only use src/lib/supabase files.
 - The 'use client' directive must be the first line in your file (before imports)
 - This applies to ANY file using React hooks
 - Common hooks requiring 'use client':
@@ -62,27 +147,3 @@ General preferences:
 - Don't import anything from Radix UI. Always import UI componentsfrom Shadcn UI.
 - `useLoaderData` does not exist anymore. Instead, components receive Router.ComponentProps type param that contains loaderData.
 - `useActionData` does not exist anymore. Instead, components receive Router.ComponentProps type param that contains actionData.
-
-### **Commit Message Rules**  
-
-#### **📌 General Rules**  
-- Write commit messages in **English**.  
-- Follow the format: **`<Type>: <Message>`**  
-- Keep messages **clear and concise**.  
-
-#### **📌 Commit Message Types**  
-| Type     | Description |
-|----------|------------|
-| **Feature:** | Add a new feature |
-| **Fix:** | Fix a bug or issue |
-| **Chore:** | Maintenance tasks (e.g., updating dependencies) |
-| **Refactor:** | Code changes that don’t add features or fix bugs |
-| **Docs:** | Documentation updates |
-| **Style:** | Code style changes (formatting, missing semicolons, etc.) |
-| **Test:** | Adding or updating tests |
-
-#### **📌 Examples**  
-```bash
-git commit -m "Feature: Add image upload functionality"
-git commit -m "Fix: Resolve login issue on mobile devices"
-git commit -m "Chore: Update dependencies to latest versions"

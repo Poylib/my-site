@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
+import NewRow from '@/components/main/NewRow';
 export default function RootPage() {
   return (
     <main className="min-h-screen">
@@ -22,7 +22,7 @@ export default function RootPage() {
       </section>
 
       {/* 검색 섹션 */}
-      <section className="container mx-auto px-4 py-8">
+      {/* <section className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto flex gap-2">
           <Input
             type="search"
@@ -31,39 +31,29 @@ export default function RootPage() {
           />
           <Button>검색</Button>
         </div>
-      </section>
+      </section> */}
 
       {/* 인기 태그 섹션 */}
-      <section className="container mx-auto px-4 py-8">
+      {/* <section className="container mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold mb-4">인기 태그</h2>
         <div className="flex flex-wrap gap-2">
           {['#필름카메라', '#야경', '#촬영팁', '#인물사진', '#풍경사진'].map(
             (tag) => (
-              <Button key={tag} variant="outline" size="sm">
+              <Button
+                key={tag}
+                variant="outline"
+                size="sm"
+                className="cursor-pointer"
+              >
                 {tag}
               </Button>
             ),
           )}
         </div>
-      </section>
+      </section> */}
 
       {/* 최신 글 섹션 */}
-      <section className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-4">최신 글</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardContent className="p-4">
-                <div className="aspect-video bg-gray-200 mb-4 rounded-lg" />
-                <h3 className="font-semibold mb-2">샘플 포스트 제목 {i}</h3>
-                <p className="text-sm text-gray-600">
-                  포스트 설명이 들어갈 자리입니다...
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+      <NewRow />
 
       {/* 추천 글 섹션 */}
       <section className="container mx-auto px-4 py-8">

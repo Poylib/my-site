@@ -1,7 +1,9 @@
 export interface Post {
   id: string;
-  title: string;
-  content: string;
+  title_ko: string;
+  title_en: string | null;
+  content_ko: string;
+  content_en: string | null;
   thumbnail_url: string;
   created_at: string;
   updated_at: string;
@@ -9,7 +11,8 @@ export interface Post {
   view_count: number;
   is_published: boolean;
   slug: string;
-  tags?: string[];
+  has_translation: boolean;
+  tags: string[];
 }
 
 export interface PostWithDetails extends Post {

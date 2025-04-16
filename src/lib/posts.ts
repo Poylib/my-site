@@ -1,6 +1,7 @@
 import { PostWithDetails } from '@/types/post';
 import { Tag, TagWithPostCount } from '@/types/tag';
 import { createClient } from './supabase/server';
+import { Post } from '@/types/post';
 
 export async function getLatestPosts(
   limit: number = 6,
@@ -109,4 +110,38 @@ export async function getAllTags(): Promise<TagWithPostCount[]> {
     ...tag,
     post_count: tag.post_tags[0].count,
   }));
+}
+
+export async function getPost(slug: string): Promise<PostWithDetails | null> {
+  console.log('🚀 ~ getPost ~ slug:', slug);
+  const supabase = await createClient();
+
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select(
+      `
+    *,
+    tags:post_tags(
+      tag:tags(
+        id,
+        name,
+        slug
+      )
+    )
+  `,
+    )
+    .eq('slug', slug)
+    .single();
+
+  if (error || !post) {
+    return null;
+  }
+
+  // 태그 데이터 구조 변환
+  const transformedPost = {
+    ...post,
+    tags: post.tags.map((t: any) => t.tag),
+  };
+
+  return transformedPost;
 }

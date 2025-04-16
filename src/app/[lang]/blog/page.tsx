@@ -10,9 +10,9 @@ export const supportedLanguages = ['ko', 'en', 'ja'];
 export async function generateMetadata({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
-  const { lang } = params;
+  const { lang } = await params;
 
   const titles = {
     ko: '블로그 | 포토그래피 블로그',
@@ -72,16 +72,16 @@ const texts = {
 };
 
 interface BlogPageProps {
-  params: { lang: string };
-  searchParams: { tag?: string };
+  params: Promise<{ lang: string }>;
+  searchParams: Promise<{ tag?: string }>;
 }
 
 export default async function BlogPage({
   params,
   searchParams,
 }: BlogPageProps) {
-  const { lang } = params;
-  const { tag } = searchParams;
+  const { lang } = await params;
+  const { tag } = await searchParams;
 
   const [posts, tags] = await Promise.all([
     tag ? getPostsByTag(tag) : getLatestPosts(12),
@@ -103,17 +103,17 @@ export default async function BlogPage({
             >
               {t.allPosts}
             </Link>
-            {tags.map((tag) => (
+            {tags.map((tagObject) => (
               <Link
-                key={tag.id}
-                href={`/${lang}/blog?tag=${tag.slug}`}
+                key={tagObject.id}
+                href={`/${lang}/blog?tag=${tagObject.slug}`}
                 className={`px-4 py-2 rounded-lg hover:bg-gray-100 flex justify-between items-center ${
-                  searchParams.tag === tag.slug ? 'bg-gray-100' : ''
+                  tag === tagObject.slug ? 'bg-gray-100' : ''
                 }`}
               >
-                <span className="text-gray-700">#{tag.name}</span>
+                <span className="text-gray-700">#{tagObject.name}</span>
                 <span className="text-xs text-gray-500">
-                  {tag.post_count} {t.postsCount}
+                  {tagObject.post_count} {t.postsCount}
                 </span>
               </Link>
             ))}
@@ -128,39 +128,46 @@ export default async function BlogPage({
           <p className="text-gray-600 mb-8">{t.description}</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {posts.map((post) => (
-              <Link href={`/${lang}/posts/${post.slug}`} key={post.id}>
-                <Card className="hover:shadow-lg transition-shadow h-full">
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-gray-200 mb-4 rounded-lg overflow-hidden">
-                      <img
-                        src={post.thumbnail_url}
-                        alt={post.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="font-semibold mb-2">{post.title}</h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {post.content}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {post.tags.map((tag) => (
-                        <Link
-                          key={tag}
-                          href={`/${lang}/blog?tag=${tag.toLowerCase()}`}
-                          className="text-xs bg-gray-100 px-2 py-1 rounded-full hover:bg-gray-200"
-                        >
-                          #{tag}
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="mt-4 text-sm text-blue-600">
-                      {t.readMore} →
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {posts.map((post) => {
+              const title =
+                lang === 'ko' ? post.title_ko : post.title_en || post.title_ko;
+              const content =
+                lang === 'ko'
+                  ? post.content_ko
+                  : post.content_en || post.content_ko;
+
+              return (
+                <div key={post.id}>
+                  <Link href={`/${lang}/blog/${post.slug}`}>
+                    <Card className="hover:shadow-lg transition-shadow h-full">
+                      <CardContent className="p-4">
+                        <div className="aspect-video bg-gray-200 mb-4 rounded-lg overflow-hidden">
+                          <img
+                            src={post.thumbnail_url}
+                            alt={title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h3 className="font-semibold mb-2">{title}</h3>
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {content}
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {post.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="text-xs bg-gray-100 px-2 py-1 rounded-full"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              );
+            })}
           </div>
         </main>
       </div>

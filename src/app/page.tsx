@@ -2,7 +2,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import NewRow from '@/components/main/NewRow';
-export default function RootPage() {
+
+export default async function RootPage() {
   return (
     <main className="min-h-screen">
       {/* 히어로 섹션 */}

@@ -1,10 +1,18 @@
 {
   "common": {
-    "readMore": "続きを読む",
+    "readMore": "詳細を見る",
     "back": "戻る"
   },
   "nav": {
     "home": "ホーム",
     "blog": "ブログ"
+  },
+  "blog": {
+    "title": "ブログ",
+    "description": "フォトグラフィーブログのすべての記事をご覧ください。",
+    "categories": "カテゴリー",
+    "allPosts": "全ての記事",
+    "postsCount": "件",
+    "filteredTitle": "タグ: "
   }
 }

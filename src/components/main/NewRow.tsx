@@ -2,7 +2,8 @@ import { Card, CardContent } from '../ui/card';
 import { getLatestPosts } from '@/lib/posts';
 import Link from 'next/link';
 
-export default async function NewRow() {
+export default async function NewRow({ lang = 'ko' }: { lang?: string }) {
+  console.log('🚀 ~ NewRow ~ lang:', lang);
   const posts = await getLatestPosts(3);
 
   return (

@@ -25,7 +25,6 @@ export async function getLatestPosts(
     console.error('Error fetching latest posts:', error);
     return [];
   }
-
   return data.map((post: any) => ({
     ...post,
     tags: post.post_tags.map((t: any) => t.tags.name),

@@ -6,5 +6,13 @@
   "nav": {
     "home": "홈",
     "blog": "블로그"
+  },
+  "blog": {
+    "title": "블로그",
+    "description": "포토그래피 블로그의 모든 글을 확인해보세요.",
+    "categories": "카테고리",
+    "allPosts": "전체 글",
+    "postsCount": "개의 글",
+    "filteredTitle": "태그: "
   }
 }

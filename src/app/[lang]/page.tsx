@@ -59,7 +59,7 @@ export default async function HomePage({ params }: HomePageProps) {
           </section> */}
 
       {/* 최신 글 섹션 */}
-      <NewRow />
+      <NewRow lang={lang} />
 
       {/* 추천 글 섹션 */}
       <section className="container mx-auto px-4 py-8">

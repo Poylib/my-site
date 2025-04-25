@@ -25,3 +25,25 @@ export function getLocalizedPath(path: string, lang: Language): string {
   // 모든 언어에 대해 언어 코드를 포함
   return `/${lang}${pathWithoutLang}`;
 }
+
+export function getLocalizedContent<T extends Record<string, any>>(
+  content: T,
+  lang: string,
+  fallbackLang: string = 'ko',
+): string {
+  const langKey = `content_${lang}`;
+  const fallbackKey = `content_${fallbackLang}`;
+
+  return content[langKey] || content[fallbackKey] || '';
+}
+
+export function getLocalizedTitle<T extends Record<string, any>>(
+  content: T,
+  lang: string,
+  fallbackLang: string = 'ko',
+): string {
+  const langKey = `title_${lang}`;
+  const fallbackKey = `title_${fallbackLang}`;
+
+  return content[langKey] || content[fallbackKey] || '';
+}

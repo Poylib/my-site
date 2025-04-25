@@ -2,6 +2,11 @@ import { getLatestPosts, getAllTags, getPostsByTag } from '@/lib/posts';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import ko from '@/messages/ko.json';
+import en from '@/messages/en.json';
+import ja from '@/messages/ja.json';
+
+const messages = { ko, en, ja };
 
 // 지원하는 언어 목록
 export const supportedLanguages = ['ko', 'en', 'ja'];
@@ -40,37 +45,6 @@ export async function generateMetadata({
   };
 }
 
-// 언어별 텍스트
-const texts = {
-  ko: {
-    title: '블로그',
-    description: '포토그래피 블로그의 모든 글을 확인해보세요.',
-    readMore: '자세히 보기',
-    categories: '카테고리',
-    allPosts: '전체 글',
-    postsCount: '개의 글',
-    filteredTitle: '태그: ',
-  },
-  en: {
-    title: 'Blog',
-    description: 'Check out all posts from our photography blog.',
-    readMore: 'Read More',
-    categories: 'Categories',
-    allPosts: 'All Posts',
-    postsCount: 'posts',
-    filteredTitle: 'Tag: ',
-  },
-  ja: {
-    title: 'ブログ',
-    description: 'フォトグラフィーブログのすべての記事をご覧ください。',
-    readMore: '詳細を見る',
-    categories: 'カテゴリー',
-    allPosts: '全ての記事',
-    postsCount: '件',
-    filteredTitle: 'タグ: ',
-  },
-};
-
 interface BlogPageProps {
   params: Promise<{ lang: string }>;
   searchParams: Promise<{ tag?: string }>;
@@ -88,20 +62,20 @@ export default async function BlogPage({
     getAllTags(),
   ]);
 
-  const t = texts[lang as keyof typeof texts] || texts.ko;
+  const t = messages[lang as keyof typeof messages] || messages.ko;
 
   return (
     <div className="container mx-auto px-4 py-8 mt-16">
       <div className="flex flex-col md:flex-row gap-8">
         {/* 왼쪽 사이드바 - 태그 목록 */}
         <aside className="md:w-64 flex-shrink-0">
-          <h2 className="text-xl font-bold mb-4">{t.categories}</h2>
+          <h2 className="text-xl font-bold mb-4">{t.blog.categories}</h2>
           <div className="space-y-2">
             <Link
               href={`/${lang}/blog`}
               className="block px-4 py-2 rounded-lg hover:bg-gray-100 font-medium"
             >
-              {t.allPosts}
+              {t.blog.allPosts}
             </Link>
             {tags.map((tagObject) => (
               <Link
@@ -113,7 +87,7 @@ export default async function BlogPage({
               >
                 <span className="text-gray-700">#{tagObject.name}</span>
                 <span className="text-xs text-gray-500">
-                  {tagObject.post_count} {t.postsCount}
+                  {tagObject.post_count} {t.blog.postsCount}
                 </span>
               </Link>
             ))}
@@ -123,9 +97,9 @@ export default async function BlogPage({
         {/* 오른쪽 메인 컨텐츠 - 게시글 목록 */}
         <main className="flex-1">
           <h1 className="text-3xl font-bold mb-2">
-            {tag ? `${t.filteredTitle} #${tag}` : t.title}
+            {tag ? `${t.blog.filteredTitle} #${tag}` : t.blog.title}
           </h1>
-          <p className="text-gray-600 mb-8">{t.description}</p>
+          <p className="text-gray-600 mb-8">{t.blog.description}</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {posts.map((post) => {
@@ -138,7 +112,7 @@ export default async function BlogPage({
 
               return (
                 <div key={post.id}>
-                  <Link href={`/${lang}/blog/${post.slug}`}>
+                  <Link href={`/${lang}/posts/${post.slug}`}>
                     <Card className="hover:shadow-lg transition-shadow h-full">
                       <CardContent className="p-4">
                         <div className="aspect-video bg-gray-200 mb-4 rounded-lg overflow-hidden">
@@ -152,19 +126,22 @@ export default async function BlogPage({
                         <p className="text-sm text-gray-600 line-clamp-2">
                           {content}
                         </p>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {post.tags.map((tag, index) => (
-                            <span
-                              key={index}
-                              className="text-xs bg-gray-100 px-2 py-1 rounded-full"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
+                        <div className="mt-4 text-sm text-blue-600">
+                          {t.common.readMore} →
                         </div>
                       </CardContent>
                     </Card>
                   </Link>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {post.tags.map((tag) => (
+                      <span
+                        key={tag.id}
+                        className="text-xs bg-gray-100 px-2 py-1 rounded-full"
+                      >
+                        #{tag.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               );
             })}

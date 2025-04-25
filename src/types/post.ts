@@ -1,3 +1,5 @@
+import { Tag } from './tag';
+
 export interface Post {
   id: string;
   title_ko: string;
@@ -12,9 +14,9 @@ export interface Post {
   is_published: boolean;
   slug: string;
   has_translation: boolean;
-  tags: string[];
+  tags: Tag[];
 }
 
 export interface PostWithDetails extends Post {
-  tags: string[];
+  tags: Tag[];
 }

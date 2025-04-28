@@ -133,6 +133,7 @@ export async function getPost(slug: string): Promise<PostWithDetails | null> {
     .single();
 
   if (error || !post) {
+    console.error('Error fetching post:', error);
     return null;
   }
 

@@ -61,6 +61,7 @@ export default async function BlogPage({
     tag ? getPostsByTag(tag) : getLatestPosts(12),
     getAllTags(),
   ]);
+  console.log('🚀 ~ tags:', tags);
 
   const t = messages[lang as keyof typeof messages] || messages.ko;
 
@@ -112,7 +113,7 @@ export default async function BlogPage({
 
               return (
                 <div key={post.id}>
-                  <Link href={`/${lang}/posts/${post.slug}`}>
+                  <Link href={`/${lang}/blog/${post.slug}`}>
                     <Card className="hover:shadow-lg transition-shadow h-full">
                       <CardContent className="p-4">
                         <div className="aspect-video bg-gray-200 mb-4 rounded-lg overflow-hidden">
@@ -129,19 +130,19 @@ export default async function BlogPage({
                         <div className="mt-4 text-sm text-blue-600">
                           {t.common.readMore} →
                         </div>
+                        {/* <div className="mt-2 flex flex-wrap gap-1">
+                          {post.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className="text-xs bg-gray-100 px-2 py-1 rounded-full"
+                            >
+                              #{tag.name}
+                            </span>
+                          ))}
+                        </div> */}
                       </CardContent>
                     </Card>
                   </Link>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag.id}
-                        className="text-xs bg-gray-100 px-2 py-1 rounded-full"
-                      >
-                        #{tag.name}
-                      </span>
-                    ))}
-                  </div>
                 </div>
               );
             })}

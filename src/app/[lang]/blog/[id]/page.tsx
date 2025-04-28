@@ -7,6 +7,7 @@ import { getPost } from '@/lib/posts';
 import { getCurrentLanguage } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Eye } from 'lucide-react';
+import MarkdownViewer from '@/components/markdown/MarkdownViewer';
 
 const LOCALES = {
   ko,
@@ -83,7 +84,9 @@ export default async function PostPage({ params }: PostPageProps) {
           </div>
         )}
 
-        <div className="prose prose-lg max-w-none">{content}</div>
+        <div className="prose prose-lg max-w-none">
+          <MarkdownViewer content={content} />
+        </div>
       </div>
     </article>
   );
